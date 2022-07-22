@@ -10,23 +10,37 @@ public class CoffeeMachine {
     static int cups = 9;
     static int money = 550;
 
+    enum States {
+        MAIN_MENU, BUYING, FILLING_WATER, FILLING_MILK, ADDING_BEANS, ADDING_CUPS
+    }
+
+    States state;
+
     public static void main(String[] args) {
 
-        printState();
-        System.out.println("Write action (buy, fill, take):");
+        System.out.println("Write action (buy, fill, take, remaining, exit):");
         String action = scanner.next();
-        if (action.equals("buy")) {
-            buyCoffee();
+        while (!action.equals("exit")) {
+            if (action.equals("buy")) {
+                buyCoffee();
+            }
+            if (action.equals("fill")) {
+                fillCoffee();
+            }
+            if (action.equals("take")) {
+                takeMoney();
+            }
+            if (action.equals("remaining")) {
+                printState();
+            }
+            action = scanner.next();
         }
-        if (action.equals("fill")) {
-            fillCoffee();
-        }
-        if (action.equals("take")) {
-            takeMoney();
-        }
-        printState();
+    }
+
+    private void processInput(String input) {
 
     }
+
 
     private static void takeMoney() {
         System.out.println("I gave you $" + money);
@@ -46,27 +60,81 @@ public class CoffeeMachine {
 
     private static void buyCoffee() {
         System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
-        int sortOfCoffee = scanner.nextInt();
-        if (sortOfCoffee == 1) {
-            water -= 250;
-            beans -= 16;
-            cups -=1;
-            money += 4;
+        String sortOfCoffee = scanner.next();
+        System.out.println(sortOfCoffee);
+        if (checkResources(sortOfCoffee)) {
+            switch (sortOfCoffee) {
+                case "1" :
+                    water -= 250;
+                    beans -= 16;
+                    cups -=1;
+                    money += 4;
+                    break;
+                case "2" :
+                    water -= 350;
+                    milk -= 75;
+                    beans -= 20;
+                    cups -=1;
+                    money += 7;
+                    break;
+                case "3" :
+                    water -= 200;
+                    milk -= 100;
+                    beans -= 12;
+                    cups -=1;
+                    money += 6;
+                    break;
+                default:
+  //                  System.out.println("Wrong input!");
+            }
         }
-        if (sortOfCoffee == 2) {
-            water -= 350;
-            milk -= 75;
-            beans -= 20;
-            cups -=1;
-            money += 7;
+
+            System.out.println("I have enough resources, making you a coffee!");
+    }
+
+    private static boolean checkResources(String sortOfCoffee) {
+        int waterNeeded = 0;
+        int beansNeeded = 0;
+        int milkNeeded = 0;
+        int cupsNeeded = 1;
+
+        switch (sortOfCoffee) {
+            case "1" :
+                waterNeeded = 250;
+                beansNeeded = 16;
+                break;
+            case "2" :
+                waterNeeded = 350;
+                milkNeeded = 75;
+                beansNeeded = 20;
+                break;
+            case "3" :
+                waterNeeded = 200;
+                milkNeeded = 100;
+                beansNeeded = 12;
+                break;
+            default:
+                System.out.println("Wrong input!");
+                return false;
         }
-        if (sortOfCoffee == 3) {
-            water -= 200;
-            milk -= 100;
-            beans -= 12;
-            cups -=1;
-            money += 6;
+
+        if (waterNeeded > water) {
+            System.out.println("Sorry, not enough water!");
+            return false;
         }
+        if (milkNeeded > milk) {
+            System.out.println("Sorry, not enough milk!");
+            return false;
+        }
+        if (beansNeeded > beans) {
+            System.out.println("Sorry, not enough beans!");
+            return false;
+        }
+        if (cupsNeeded > cups) {
+            System.out.println("Sorry, not enough cups!");
+            return false;
+        }
+        return true;
     }
 
     public static void printState() {
